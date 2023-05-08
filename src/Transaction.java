@@ -2,16 +2,25 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.Scanner;
 
-/**
+/*************************************************************************
+ *
+ *  Pace University
+ *  Spring 2023
+ *  DBMS PROJECT
+ *  Course: CS 623
+ *
+ * Group Members: Bhavin Himatkumar Goswami(CRN: 23704), Ananthula Sai Vyshnav(CRN: 23704), Lokeshwar Anchuri(CRN: 23704)
+ *
  * Tasks Performed:
  * 2. The depot d1 is deleted from Depot and Stock.
  * 4. The depot d1 changes its name to dd1 in Depot and Stock.
  * 6. We add a depot (d100, Chicago, 100) in Depot and (p1, d100, 100) in Stock.
- */
+ *************************************************************************/
 
 public class Transaction {
     public static void main(String args[]) throws SQLException, IOException,
             ClassNotFoundException {
+        //initializing selected option
         int selected_option = 0;
         // Load the PostgreSQL driver
         Class.forName("org.postgresql.Driver");
@@ -26,6 +35,8 @@ public class Transaction {
         conn.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
         Statement stmt_obj = null;
 
+        //DROP TABLE IF EXISTS
+        String dropIfExist = "DROP TABLE IF EXISTS Product, Depot, Stock;";
         //Create table if not exist
         String createIfNot = "CREATE TABLE IF NOT EXISTS Product(prodid CHAR(10), pname VARCHAR(30), price DECIMAL);" +
                 "CREATE TABLE IF NOT EXISTS Depot(depid CHAR(10), addr VARCHAR(40), volume INTEGER);" +
@@ -61,12 +72,15 @@ public class Transaction {
             // Create statement object
             stmt_obj = conn.createStatement();
 
+            //EXECUTING Drop table if exist
             //EXECUTING Create table if not exist
             //EXECUTING Insert data in table
             //EXECUTING Alter table and adding cascading
+            stmt_obj.executeUpdate(dropIfExist);
             stmt_obj.executeUpdate(createIfNot);
             stmt_obj.executeUpdate(insertData);
             stmt_obj.executeUpdate(alterCasc);
+            System.out.println("\n###Tables Product, Depot & Stock Created, We are all set to perform tasks!!###");
         } catch (SQLException e) {
             System.out.println("\n###Tables already exists!###");
         }
@@ -79,7 +93,7 @@ public class Transaction {
             //Scanner for menu input
             Scanner input_option = new Scanner(System.in);
             System.out.println("\nSelect from the following menu:(Enter the task no: to be performed)\n");
-            System.out.println("1. The depot 'd1' changes its name to 'dd1' in Depot and Stock\n" +
+            System.out.println("1. The depot 'd2' changes its name to 'dd1' in Depot and Stock\n" +
                     "2. The depot 'd1' is deleted from 'Depot' and 'Stock'\n" +
                     "3. Add a 'depot' (d100, Chicago, 100) in 'Depot' and (p1, d100, 100) in 'Stock'\n" +
                     "4. Retrive all the tables\n"+"5.Exit\n");
@@ -95,7 +109,12 @@ public class Transaction {
                     System.out.println("Updating 'd2' to 'dd1' in Depot and Stock!");
                     try {
                         stmt_obj = conn.createStatement();
-                        stmt_obj.executeUpdate("UPDATE Depot SET depid = 'dd1' WHERE depid = 'd2'");
+                        //We have intentionally set depid to 'd2' since we have a task 4 which is to delete d1 from depot and stock
+                        // We can re-insert d1 to the table again for achieving task 4 by running the below code snippets to insert d1 again to the db
+                        // stmt_obj.executeUpdate("INSERT INTO Depot(depid, addr, volume) VALUES ('d1','New York',9000);");
+                        // stmt_obj.executeUpdate("INSERT INTO Stock(prodid, depid, quantity) VALUES" +"('p1','d1',1000)," +"('p3','d1',3000)," +"('p2','d1',-400);");
+
+                        stmt_obj.executeUpdate("UPDATE Depot SET depid = 'dd1' WHERE depid = 'd2';");
                     } catch (SQLException e) {
                         System.out.println("An exception was thrown" + e);
                         System.out.println("Rolling back..............!");
@@ -108,10 +127,12 @@ public class Transaction {
 
                     break;
                 case 2:
-                    //Update case Task 4
+                    //Delete case Task 4
                     System.out.println("Deleting 'd1' from Depot and Stock!");
                     try {
                         stmt_obj = conn.createStatement();
+                        //We need to reinsert d1 in order to Delete d1 from table if we perform Update query on d1 first!
+                        // Execute Insert CODE SNIPPETS HERE
                         stmt_obj.executeUpdate("DELETE FROM depot WHERE depid ='d1';");
                     } catch (SQLException e) {
                         System.out.println("An exception was thrown" + e.getMessage());
@@ -125,7 +146,7 @@ public class Transaction {
                     break;
 
                 case 3:
-                    //Update case Task 6
+                    //Insert case Task 6
                     System.out.println("Adding a depot (d100, Chicago, 100) in Depot and (p1, d100, 100) in Stock.");
                     try {
                         stmt_obj = conn.createStatement();
@@ -143,11 +164,11 @@ public class Transaction {
                     stmt_obj.close();
                     break;
                 case 4:
-                    //Update case Task 6
+                    //Retrieving table data from postgres
                     System.out.println("Retrieve all the tables from Database");
                     try {
                         stmt_obj = conn.createStatement();
-                        ResultSet rs_product = stmt_obj.executeQuery("SELECT * FROM Product");
+                        ResultSet rs_product = stmt_obj.executeQuery("SELECT * FROM Product;");
                         System.out.println("###############################");
                         System.out.println("Table Product");
                         while (rs_product.next()) {
@@ -159,7 +180,7 @@ public class Transaction {
 
                         rs_product.close();
 
-                        ResultSet rs_depot = stmt_obj.executeQuery("SELECT * FROM Depot");
+                        ResultSet rs_depot = stmt_obj.executeQuery("SELECT * FROM Depot;");
                         System.out.println("###############################");
                         System.out.println("Table Depot");
 
@@ -172,7 +193,7 @@ public class Transaction {
 
                         rs_depot.close();
 
-                        ResultSet rs_stock = stmt_obj.executeQuery("SELECT * FROM Stock");
+                        ResultSet rs_stock = stmt_obj.executeQuery("SELECT * FROM Stock;");
                         System.out.println("###############################");
                         System.out.println("Table Stock");
 
