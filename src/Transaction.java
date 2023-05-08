@@ -98,6 +98,7 @@ public class Transaction {
                         stmt_obj.executeUpdate("UPDATE Depot SET depid = 'dd1' WHERE depid = 'd2'");
                     } catch (SQLException e) {
                         System.out.println("An exception was thrown" + e);
+                        System.out.println("Rolling back..............!");
                         // For atomicity
                         conn.rollback();
                         stmt_obj.close();
@@ -114,6 +115,7 @@ public class Transaction {
                         stmt_obj.executeUpdate("DELETE FROM depot WHERE depid ='d1';");
                     } catch (SQLException e) {
                         System.out.println("An exception was thrown" + e.getMessage());
+                        System.out.println("Rolling back..............!");
                         // For atomicity
                         conn.rollback();
                         stmt_obj.close();
@@ -132,6 +134,7 @@ public class Transaction {
 
                     } catch (SQLException e) {
                         System.out.println("An exception was thrown" + e.getMessage());
+                        System.out.println("Rolling back..............!");
                         // For atomicity
                         conn.rollback();
                         stmt_obj.close();
