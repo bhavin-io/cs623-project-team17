@@ -115,6 +115,8 @@ public class Transaction {
                         // stmt_obj.executeUpdate("INSERT INTO Stock(prodid, depid, quantity) VALUES" +"('p1','d1',1000)," +"('p3','d1',3000)," +"('p2','d1',-400);");
 
                         stmt_obj.executeUpdate("UPDATE Depot SET depid = 'dd1' WHERE depid = 'd2';");
+                        conn.commit();
+                        stmt_obj.close();
                     } catch (SQLException e) {
                         System.out.println("An exception was thrown" + e);
                         System.out.println("Rolling back..............!");
@@ -122,8 +124,7 @@ public class Transaction {
                         conn.rollback();
                         stmt_obj.close();
                     }
-                    conn.commit();
-                    stmt_obj.close();
+
 
                     break;
                 case 2:
@@ -134,6 +135,8 @@ public class Transaction {
                         //We need to reinsert d1 in order to Delete d1 from table if we perform Update query on d1 first!
                         // Execute Insert CODE SNIPPETS HERE
                         stmt_obj.executeUpdate("DELETE FROM depot WHERE depid ='d1';");
+                        conn.commit();
+                        stmt_obj.close();
                     } catch (SQLException e) {
                         System.out.println("An exception was thrown" + e.getMessage());
                         System.out.println("Rolling back..............!");
@@ -141,8 +144,7 @@ public class Transaction {
                         conn.rollback();
                         stmt_obj.close();
                     }
-                    conn.commit();
-                    stmt_obj.close();
+
                     break;
 
                 case 3:
@@ -152,7 +154,8 @@ public class Transaction {
                         stmt_obj = conn.createStatement();
                         stmt_obj.executeUpdate("INSERT INTO Depot (depid, addr, volume) VALUES ('d100', 'Chicago', 100);");
                         stmt_obj.executeUpdate("INSERT INTO Stock (prodid, depid, quantity) VALUES ('p1', 'd100', 100);");
-
+                        conn.commit();
+                        stmt_obj.close();
                     } catch (SQLException e) {
                         System.out.println("An exception was thrown" + e.getMessage());
                         System.out.println("Rolling back..............!");
@@ -160,8 +163,7 @@ public class Transaction {
                         conn.rollback();
                         stmt_obj.close();
                     }
-                    conn.commit();
-                    stmt_obj.close();
+
                     break;
                 case 4:
                     //Retrieving table data from postgres
@@ -206,15 +208,15 @@ public class Transaction {
 
                         rs_stock.close();
 
-
+                        conn.commit();
+                        stmt_obj.close();
                     } catch (SQLException e) {
                         System.out.println("An exception was thrown" + e.getMessage());
                         // For atomicity
                         conn.rollback();
                         stmt_obj.close();
                     }
-                    conn.commit();
-                    stmt_obj.close();
+
                     break;
                 case 5:
                     //Exit
